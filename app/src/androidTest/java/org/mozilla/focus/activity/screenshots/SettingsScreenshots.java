@@ -14,11 +14,7 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 
-<<<<<<< HEAD
 import org.junit.Before;
-=======
-import org.junit.After;
->>>>>>> reset after each test
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
