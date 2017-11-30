@@ -14,7 +14,11 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 
+<<<<<<< HEAD
 import org.junit.Before;
+=======
+import org.junit.After;
+>>>>>>> reset after each test
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -136,6 +140,7 @@ public class SettingsScreenshots extends ScreenshotTest {
         /* Add custom URL */
         onView(withText(getString(R.string.preference_autocomplete_subitem_customlist)))
                 .perform(click());
+        device.waitForIdle();
         final String addCustomURLAction = getString(R.string.preference_autocomplete_action_add);
         onView(withText(addCustomURLAction))
                 .check(matches(isDisplayed()));
@@ -150,6 +155,7 @@ public class SettingsScreenshots extends ScreenshotTest {
                 .perform(typeText("screenshot.com"), closeSoftKeyboard());
         onView(withId(R.id.save))
                 .perform(click());
+        device.waitForIdle();
         onView(withText(addCustomURLAction))
                 .check(matches(isDisplayed()));
 
@@ -164,6 +170,7 @@ public class SettingsScreenshots extends ScreenshotTest {
         /* Remove dialog */
         onView(withText(getString(R.string.preference_autocomplete_title_remove)))
                 .check(matches(isDisplayed()));
+        TestHelper.pressBackKey();  // remove keyboard
         Screengrab.screenshot("Autocomplete_Custom_URL_Remove_Dialog");
         Espresso.pressBack();
         onView(withText(addCustomURLAction))
