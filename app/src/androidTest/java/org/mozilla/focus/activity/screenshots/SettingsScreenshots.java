@@ -10,7 +10,6 @@ import android.support.test.espresso.Espresso;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 
@@ -40,6 +39,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.PreferenceMatchers.withKey;
 import static android.support.test.espresso.matcher.PreferenceMatchers.withTitleText;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withParent;
@@ -77,50 +77,54 @@ public class SettingsScreenshots extends ScreenshotTest {
     public void takeScreenShotsOfSettings() throws Exception {
         openSettings();
 
-        assertTrue(TestHelper.settingsHeading.waitForExists(waitingTime));
         Screengrab.screenshot("Settings_View_Top");
 
         /* Language List (First page only */
-        UiObject LanguageSelection = TestHelper.settingsList.getChild(new UiSelector()
-                .className("android.widget.LinearLayout")
-                .instance(0));
-        LanguageSelection.click();
-        TestHelper.settingsHeading.waitUntilGone(waitingTime);
+        onView(withText(R.string.preference_language))
+                .perform(click());
+        onView(withText(R.string.action_cancel))
+                .check(matches(isDisplayed()));
 
-        UiObject CancelBtn =  device.findObject(new UiSelector()
-                .resourceId("android:id/button2")
-                .enabled(true));
+
         Screengrab.screenshot("Language_Selection");
-        CancelBtn.click();
-        assertTrue(TestHelper.settingsHeading.waitForExists(waitingTime));
+        onView(withText(R.string.action_cancel))
+                .perform(click());
+        onView(withText(R.string.preference_language))
+                .check(matches(isDisplayed()));
 
         /* Search Engine List */
-        UiObject SearchEngineSelection = TestHelper.settingsList.getChild(new UiSelector()
-                .className("android.widget.LinearLayout")
-                .instance(1));
-        SearchEngineSelection.click();
-        TestHelper.settingsHeading.waitUntilGone(waitingTime);
+        onView(withText(R.string.preference_search_engine_default))
+                .perform(click());
+        onView(withText(R.string.preference_search_installed_search_engines))
+                .check(matches(isDisplayed()));
+
         Screengrab.screenshot("SearchEngine_Selection");
 
         /* Remove Search Engine page */
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getContext());
+        onView(withText(R.string.preference_search_remove))
+                .check(matches(isDisplayed()));
+        device.waitForIdle();
         Screengrab.screenshot("SearchEngine_Search_Engine_Menu");
         // Menu items don't have ids, so we have to match by text
         onView(withText(R.string.preference_search_remove))
                 .perform(click());
-
+        device.waitForIdle();
         assertToolbarMatchesText(R.string.preference_search_remove_title);
         Screengrab.screenshot("SearchEngine_Remove_Search_Engines");
-        TestHelper.pressBackKey();
+        Espresso.pressBack();
 
         /* Manual Search Engine page */
         final String addEngineLabel = getString(R.string.preference_search_add2);
         onData(withTitleText(addEngineLabel))
                 .perform(click());
-        TestHelper.settingsHeading.waitUntilGone(waitingTime);
+        onView(withId(R.id.edit_engine_name))
+                .check(matches(isEnabled()));
+
+        //TestHelper.settingsHeading.waitUntilGone(waitingTime);
         Screengrab.screenshot("SearchEngine_Add_Search_Engine");
-        TestHelper.pressBackKey();
-        TestHelper.pressBackKey();
+        Espresso.pressBack();;
+        Espresso.pressBack();
 
         /* Tap autocomplete menu */
         final String urlAutocompletemenu = getString(R.string.preference_subitem_autocomplete);
@@ -161,11 +165,13 @@ public class SettingsScreenshots extends ScreenshotTest {
         /* Remove menu */
         final String removeMenu = getString(R.string.preference_autocomplete_menu_remove);
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getContext());
+        device.waitForIdle();
         onView(withText(removeMenu))
                 .check(matches(isDisplayed()));
         Screengrab.screenshot("Autocomplete_Custom_URL_Remove_Menu_Item");
         onView(withText(removeMenu))
                 .perform(click());
+        device.waitForIdle();
         /* Remove dialog */
         onView(withText(getString(R.string.preference_autocomplete_title_remove)))
                 .check(matches(isDisplayed()));
